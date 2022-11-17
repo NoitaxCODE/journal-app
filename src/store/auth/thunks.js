@@ -1,58 +1,63 @@
-import { loginWithEmailPassword, registerUserWithEmailPassword, singInWithGoogle } from "../../firebase/providers"
-import { checkingCredentials, logout, login } from "./"
+import {
+  loginWithEmailPassword,
+  logoutFirebase,
+  registerUserWithEmailPassword,
+  singInWithGoogle,
+} from "../../firebase/providers";
+import { checkingCredentials, logout, login } from "./";
 
-export const checkingAuthentication = ( email, password ) => {
-
-  return async ( dispatch ) => {
-
-    dispatch( checkingCredentials() )
-
-  }
-}
+export const checkingAuthentication = (email, password) => {
+  return async (dispatch) => {
+    dispatch(checkingCredentials());
+  };
+};
 
 export const startGoogleSignIn = () => {
-  return async ( dispatch ) => {
+  return async (dispatch) => {
+    dispatch(checkingCredentials());
 
-    dispatch( checkingCredentials() )
+    const result = await singInWithGoogle();
 
-    const result = await singInWithGoogle()
+    if (!result.ok) return dispatch(logout(result.errorMessage));
 
-    if ( !result.ok ) return dispatch( logout( result.errorMessage ) );
+    dispatch(login(result));
+  };
+};
 
-    dispatch( login( result ) )
+export const startCreatingUserWithEmailPassword = ({
+  email,
+  password,
+  displayName,
+}) => {
+  return async (dispatch) => {
+    dispatch(checkingCredentials());
 
+    const { ok, uid, photoURL, errorMessage } =
+      await registerUserWithEmailPassword({ email, password, displayName });
 
-  }
-}
+    if (!ok) return dispatch(logout({ errorMessage }));
 
-export const startCreatingUserWithEmailPassword = ({ email, password, displayName })=> {
+    dispatch(login({ uid, displayName, email, photoURL }));
+  };
+};
 
-  return async ( dispatch ) => {
+export const startLoginWithEmailPassword = (email, password) => {
+  return async (dispatch) => {
+    dispatch(checkingCredentials());
 
-    dispatch( checkingCredentials() );
+    const { ok, uid, displayName, photoURL, errorMessage } =
+      await loginWithEmailPassword(email, password);
 
-    const { ok, uid, photoURL, errorMessage } = await registerUserWithEmailPassword({ email, password, displayName})
+    if (!ok) return dispatch(logout({ errorMessage }));
 
-    if ( !ok ) return dispatch( logout({ errorMessage }) )
+    dispatch(login({ uid, displayName, email, photoURL }));
+  };
+};
 
-    dispatch( login({ uid, displayName, email, photoURL }))
+export const startLogout = () => {
+  return async (dispatch) => {
+    await logoutFirebase();
 
-  }
-
-}
-
-export const startLoginWithEmailPassword = ( email, password )=> {
-
-  return async ( dispatch ) => {
-
-    dispatch( checkingCredentials() );
-
-    const { ok, uid, displayName, photoURL, errorMessage } = await loginWithEmailPassword( email, password )
-
-    if ( !ok ) return dispatch( logout({ errorMessage }) )
-
-    dispatch( login({ uid, displayName, email, photoURL }))
-
-  }
-
-}
+    dispatch(logout());
+  };
+};
