@@ -4,10 +4,10 @@ import { useSelector } from "react-redux";
 import { SideBarItem } from "./";
 
 export const SideBar = ({ drawerWidth = 240 }) => {
+
   const { displayName } = useSelector((state) => state.auth);
   const { notes } = useSelector((state) => state.journal);
-  console.log(notes);
-
+    
   return (
     <Box
       component="nav"
@@ -29,9 +29,11 @@ export const SideBar = ({ drawerWidth = 240 }) => {
 
         <Divider />
         <List>
-          {notes.map((note) => (
-            <SideBarItem key={note.id} {...note} />
-          ))}
+          {
+            notes.map((note) => (
+              <SideBarItem key={note.id} {...note} />
+            ))
+          }
         </List>
       </Drawer>
     </Box>

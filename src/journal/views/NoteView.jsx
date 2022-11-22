@@ -1,8 +1,37 @@
 import { SaveOutlined } from "@mui/icons-material";
 import { Button, Grid, TextField, Typography } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
 import { ImageGallery } from "../components";
+import { useForm } from '../../hooks'
+import { useEffect, useMemo } from "react";
+import { setActiveNotes, startSaveNote } from "../../store/journal";
 
 export const NoteView = () => {
+
+  const dispatch = useDispatch()
+  // Con la sintaxis active:note lo que hago es renombrar la constante active por note
+  const { active:note } = useSelector( (state)=> state.journal );
+
+  const { body, title, date, onInputChange, formState } = useForm( note );
+
+  const dateString = useMemo(()=>{
+
+    const newDate = new Date( date );
+    return newDate.toUTCString();
+
+  }, [ date ])
+
+  useEffect(() => {
+    
+    dispatch( setActiveNotes( formState ) )
+
+  }, [formState])
+
+  const onSaveNote = ()=>{
+    dispatch( startSaveNote() );
+  }
+  
+
   return (
     <Grid
       container
@@ -14,11 +43,14 @@ export const NoteView = () => {
     >
       <Grid item>
         <Typography fontSize={39} fontWeight="light">
-          28 de agosto, 2023
+          { dateString }
         </Typography>
       </Grid>
       <Grid item>
-        <Button color="primary" sx={{ padding: 2 }}>
+        <Button 
+          onClick={ onSaveNote }
+          color="primary" sx={{ padding: 2 }}
+        >
           <SaveOutlined sx={{ fontSize: 30, mr: 1 }} />
           Guardar
         </Button>
@@ -32,6 +64,9 @@ export const NoteView = () => {
           placeholder="Ingrese un titulo"
           label="Titulo"
           sx={{ border: "none", mb: 1 }}
+          name='title'
+          value={ title }
+          onChange={ onInputChange }
         />
         <TextField
           type="text"
@@ -40,6 +75,9 @@ export const NoteView = () => {
           multiline
           placeholder="¿Que sucedio en el dia de hoy?"
           minRows={5}
+          name='body'
+          value={ body }
+          onChange={ onInputChange }
         />
       </Grid>
 
