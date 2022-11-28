@@ -8,6 +8,7 @@ import {
   setNotes,
   setSaving,
   updatedNote,
+  setPhotosToActiveNote,
 } from "./journalSlice";
 
 export const startNewNote = () => {
@@ -19,6 +20,7 @@ export const startNewNote = () => {
       title: "",
       body: "",
       date: new Date().getTime(),
+      imageUrls: [],
     };
 
     const newDoc = doc(collection(FirebaseDB, `${uid}/journal/notes`));
@@ -67,6 +69,16 @@ export const startUploadingFiles = (files = []) => {
   return async (dispatch) => {
     dispatch(setSaving());
 
-    await fileUpload(files[0]);
+    //await fileUpload(files[0]);
+
+    // Para subir todas las imagenes de forma simultanea, creo un arreglo de promesas con las siguientes lineas de codigo
+    const fileUploadPromises = [];
+    for (const file of files) {
+      fileUploadPromises.push(fileUpload(file));
+    }
+
+    const photosUrls = await Promise.all(fileUploadPromises);
+
+    dispatch(setPhotosToActiveNote(photosUrls));
   };
 };

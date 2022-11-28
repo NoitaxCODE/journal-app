@@ -9,11 +9,16 @@ import {
   startSaveNote,
   startUploadingFiles,
 } from "../../store/journal";
+import Swal from "sweetalert2";
 
 export const NoteView = () => {
   const dispatch = useDispatch();
   // Con la sintaxis active:note lo que hago es renombrar la constante active por note
-  const { active: note, isSaving } = useSelector((state) => state.journal);
+  const {
+    active: note,
+    isSaving,
+    messageSaved,
+  } = useSelector((state) => state.journal);
 
   const { body, title, date, onInputChange, formState } = useForm(note);
 
@@ -25,6 +30,17 @@ export const NoteView = () => {
   useEffect(() => {
     dispatch(setActiveNotes(formState));
   }, [formState]);
+
+  useEffect(() => {
+    if (!!messageSaved) {
+      Swal.fire({
+        title: "Guardado!",
+        text: `${messageSaved}`,
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+    }
+  }, [messageSaved]);
 
   const onSaveNote = () => {
     dispatch(startSaveNote());
@@ -99,7 +115,8 @@ export const NoteView = () => {
         />
       </Grid>
 
-      <ImageGallery />
+      {/* Puedo pasarles las imagenes como props a el componente, o tambien puedo consumirlas desde el store dentro del componenrte */}
+      <ImageGallery images={ note.imageUrls } />
     </Grid>
   );
 };
