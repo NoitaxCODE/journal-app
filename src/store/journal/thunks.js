@@ -1,10 +1,16 @@
 import { FirebaseDB } from "../../firebase/config";
 import { collection, doc, setDoc } from "firebase/firestore/lite";
-import { loadNotes } from "../../helpers";
-import { addNewEmptyNote, setActiveNotes, savingNewNote, setNotes, setSaving, updatedNote } from "./journalSlice";
+import { fileUpload, loadNotes } from "../../helpers";
+import {
+  addNewEmptyNote,
+  setActiveNotes,
+  savingNewNote,
+  setNotes,
+  setSaving,
+  updatedNote,
+} from "./journalSlice";
 
 export const startNewNote = () => {
-
   return async (dispatch, getState) => {
     dispatch(savingNewNote());
     const { uid } = getState().auth;
@@ -28,7 +34,6 @@ export const startNewNote = () => {
 };
 
 export const startLoadingNotes = () => {
-
   return async (dispatch, getState) => {
     const { uid } = getState().auth;
 
@@ -36,26 +41,32 @@ export const startLoadingNotes = () => {
 
     const notes = await loadNotes(uid);
 
-    dispatch( setNotes( notes ));
+    dispatch(setNotes(notes));
   };
 };
 
-export const startSaveNote = ()=>{
+export const startSaveNote = () => {
   return async (dispatch, getState) => {
-
-    dispatch( setSaving() )
+    dispatch(setSaving());
 
     const { uid } = getState().auth;
-    const { active:note } = getState().journal;
-    
+    const { active: note } = getState().journal;
+
     const noteToFireStore = { ...note };
     // Lo que hago aca es eliminar el id de la nota activa ya que no lo necesito almacenar en firestore
     delete noteToFireStore.id;
 
-    const docRef = doc( FirebaseDB, `${ uid }/journal/notes/${ note.id }` );
-    await setDoc( docRef, noteToFireStore, { merge: true } );
+    const docRef = doc(FirebaseDB, `${uid}/journal/notes/${note.id}`);
+    await setDoc(docRef, noteToFireStore, { merge: true });
 
-    dispatch( updatedNote( note ) )
+    dispatch(updatedNote(note));
+  };
+};
 
-  }
-}
+export const startUploadingFiles = (files = []) => {
+  return async (dispatch) => {
+    dispatch(setSaving());
+
+    await fileUpload(files[0]);
+  };
+};
