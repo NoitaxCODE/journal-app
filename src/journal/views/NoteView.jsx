@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { ImageGallery } from "../components";
 import { useForm } from "../../hooks";
 import { useEffect, useMemo, useRef } from "react";
-import { setActiveNotes, startDeletingNote, startSaveNote, startUploadingFiles } from "../../store/journal";
+import { setActiveNotes, startDeletingImages, startDeletingNote, startSaveNote, startUploadingFiles } from "../../store/journal";
 import Swal from "sweetalert2";
 
 export const NoteView = () => {
@@ -53,6 +53,7 @@ export const NoteView = () => {
 
   const onDelete = ()=> {
     dispatch( startDeletingNote() );
+    dispatch( startDeletingImages() );
   }
 
   return (

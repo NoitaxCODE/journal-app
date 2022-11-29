@@ -10,7 +10,9 @@ import {
   updatedNote,
   setPhotosToActiveNote,
   deleteNoteById,
+  setPhotoIdToActiveNote,
 } from "./journalSlice";
+import { deleteImgs } from "../../helpers/deleteImgs";
 
 export const startNewNote = () => {
   return async (dispatch, getState) => {
@@ -22,6 +24,7 @@ export const startNewNote = () => {
       body: "",
       date: new Date().getTime(),
       imageUrls: [],
+      imageIds:[],
     };
 
     const newDoc = doc(collection(FirebaseDB, `${uid}/journal/notes`));
@@ -74,13 +77,21 @@ export const startUploadingFiles = (files = []) => {
 
     // Para subir todas las imagenes de forma simultanea, creo un arreglo de promesas con las siguientes lineas de codigo
     const fileUploadPromises = [];
+    const idImages = [];
+    
     for (const file of files) {
-      fileUploadPromises.push(fileUpload(file));
+      const { secure_url, public_id } = await fileUpload(file);
+
+      fileUploadPromises.push( secure_url );
+      idImages.push( public_id )
+
     }
 
+    console.log(idImages)
     const photosUrls = await Promise.all(fileUploadPromises);
 
     dispatch(setPhotosToActiveNote(photosUrls));
+    dispatch(setPhotoIdToActiveNote(idImages));
   };
 };
 
@@ -95,5 +106,19 @@ export const startDeletingNote = () => {
 
     //Con la siguiente linea borramos la nota del store
     dispatch( deleteNoteById( note.id ));
+  }
+}
+
+export const startDeletingImages = () => {
+
+  return async ( dispatch, getState ) => {
+
+    const {  active: note } = getState().journal;
+
+    for ( const imgId of note.imageIds ) {
+
+      await deleteImgs( imgId )
+
+    }
   }
 }

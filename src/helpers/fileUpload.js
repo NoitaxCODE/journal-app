@@ -17,7 +17,9 @@ export const fileUpload = async (file) => {
 
     const cloudResp = await resp.json();
 
-    return cloudResp.secure_url;
+    // return cloudResp.secure_url;
+    return cloudResp;
+    
   } catch (error) {
     console.log(error);
     throw new Error(error.message);
