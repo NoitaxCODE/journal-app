@@ -7,6 +7,7 @@ export const journalSlice = createSlice({
     messageSaved: '',
     notes: [],
     active: null,
+    menuOpen: false,
     //    active: {
     //        id: 'ABC123',
     //        title: '',
@@ -65,6 +66,9 @@ export const journalSlice = createSlice({
       state.notes = state.notes.filter( note => note.id !== action.payload )
       state.active = null
     },
+    menuClick: (state) => {
+      state.menuOpen = !state.menuOpen
+    }
   },
 });
 
@@ -79,5 +83,6 @@ export const {
   savingNewNote,
   setPhotosToActiveNote,
   setPhotoIdToActiveNote,
+  menuClick,
   clearNotesLogout,
 } = journalSlice.actions;

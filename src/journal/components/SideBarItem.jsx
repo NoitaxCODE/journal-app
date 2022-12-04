@@ -1,18 +1,13 @@
 import {
-  Divider,
-  Drawer,
   Grid,
-  List,
   ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Toolbar,
-  Typography,
 } from "@mui/material";
 import { TurnedInNot } from "@mui/icons-material";
 import { useMemo } from 'react';
-import { setActiveNotes } from "../../store/journal/journalSlice";
+import { menuClick, setActiveNotes } from "../../store/journal/journalSlice";
 import { useDispatch } from "react-redux";
 
 
@@ -26,6 +21,7 @@ export const SideBarItem = ({ title='', body, date, id, imageUrls=[], imageIds=[
 
     const onClickNotes = () => {
       dispatch( setActiveNotes({ title, body, id, date, imageUrls, imageIds }) )
+      dispatch( menuClick() )
     }
 
     return(
