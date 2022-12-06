@@ -1,10 +1,20 @@
-import { DeleteOutline, SaveOutlined, UploadOutlined } from "@mui/icons-material";
+import {
+  DeleteOutline,
+  SaveOutlined,
+  UploadOutlined,
+} from "@mui/icons-material";
 import { Button, Grid, IconButton, TextField, Typography } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { ImageGallery } from "../components";
 import { useForm } from "../../hooks";
 import { useEffect, useMemo, useRef } from "react";
-import { setActiveNotes, startDeletingImages, startDeletingNote, startSaveNote, startUploadingFiles } from "../../store/journal";
+import {
+  setActiveNotes,
+  startDeletingImages,
+  startDeletingNote,
+  startSaveNote,
+  startUploadingFiles,
+} from "../../store/journal";
 import Swal from "sweetalert2";
 
 export const NoteView = () => {
@@ -51,10 +61,10 @@ export const NoteView = () => {
 
   const fileInputRef = useRef();
 
-  const onDelete = ()=> {
-    dispatch( startDeletingNote() );
-    dispatch( startDeletingImages() );
-  }
+  const onDelete = () => {
+    dispatch(startDeletingNote());
+    dispatch(startDeletingImages());
+  };
 
   return (
     <Grid
@@ -66,14 +76,11 @@ export const NoteView = () => {
       className="animate__animated animate__fadeIn animate__faster"
     >
       <Grid item>
-        <Typography 
-          fontSize={39}
-          fontWeight="light"
-          >
-          { dateString }
+        <Typography fontWeight="light" sx={{ fontSize: { xs: 30 } }}>
+          {dateString}
         </Typography>
       </Grid>
-      <Grid item>
+      <Grid item xs={12} sm={4} display="flex" justifyContent="end">
         <input
           type="file"
           multiple
@@ -119,19 +126,15 @@ export const NoteView = () => {
         />
       </Grid>
 
-      <Grid container justifyContent='end'>
-        <Button
-          onClick={ onDelete }
-          sx={{ mt: 2 }}
-          color="error"
-        >
-          <DeleteOutline/>
+      <Grid container justifyContent="end">
+        <Button onClick={onDelete} sx={{ mt: 2 }} color="error">
+          <DeleteOutline />
           Borrar
         </Button>
       </Grid>
 
       {/* Puedo pasarles las imagenes como props a el componente, o tambien puedo consumirlas desde el store dentro del componenrte */}
-      <ImageGallery images={ note.imageUrls } />
+      <ImageGallery images={note.imageUrls} />
     </Grid>
   );
 };
